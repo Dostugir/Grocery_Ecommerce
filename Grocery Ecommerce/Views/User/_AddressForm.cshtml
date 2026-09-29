@@ -1,0 +1,149 @@
+@model Grocery_Ecommerce.Models.AddressViewModel
+@{
+    var isEdit = Model.AddressId.HasValue;
+}
+
+<form id="addressForm" method="post">
+    <!-- Hidden field for AddressId when editing -->
+    @if (Model?.AddressId.HasValue == true)
+    {
+        <input type="hidden" name="AddressId" value="@Model.AddressId" />
+    }
+
+    <div class="form-group">
+        <label for="Street">Street Address <span class="required">*</span></label>
+        <input type="text" id="Street" name="Street" value="@(Model?.Street ?? "")" class="form-control" required placeholder="e.g., Road 12" />
+        <span asp-validation-for="Street" class="text-danger"></span>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group" style="flex: 1;">
+            <label for="City">City <span class="required">*</span></label>
+            <input type="text" id="City" name="City" value="@(Model?.City ?? "")" class="form-control" required placeholder="e.g., Gulshan" />
+            <span asp-validation-for="City" class="text-danger"></span>
+        </div>
+
+        <div class="form-group" style="flex: 1; margin-left: 1rem;">
+            <label for="State">State/Province <span class="required">*</span></label>
+            <input type="text" id="State" name="State" value="@(Model?.State ?? "")" class="form-control" required placeholder="e.g., Dhaka" />
+            <span asp-validation-for="State" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group" style="flex: 1;">
+            <label for="PostalCode">Postal Code <span class="required">*</span></label>
+            <input type="text" id="PostalCode" name="PostalCode" value="@(Model?.PostalCode ?? "")" class="form-control" required placeholder="e.g., 1230" />
+            <span asp-validation-for="PostalCode" class="text-danger"></span>
+        </div>
+
+        <div class="form-group" style="flex: 1; margin-left: 1rem;">
+            <label for="Country">Country <span class="required">*</span></label>
+            <input type="text" id="Country" name="Country" value="@(Model?.Country ?? "")" class="form-control" required placeholder="e.g., Bangladesh" />
+            <span asp-validation-for="Country" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group checkbox">
+        <input type="checkbox" id="IsDefault" name="IsDefault" @(Model?.IsDefault == true ? "checked" : "") />
+        <label for="IsDefault">Set as default address</label>
+    </div>
+
+    <div class="form-actions">
+        <button type="button" class="btn-secondary" onclick="closeAddressForm()">Cancel</button>
+        <button type="button" class="btn-primary" onclick="saveAddress()">@(Model?.AddressId.HasValue == true ? "Update Address" : "Add Address")</button>
+    </div>
+</form>
+
+<style>
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1f2937;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.625rem 0.875rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #27ae60;
+        box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+    }
+
+    .form-row {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .form-group.checkbox {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-group.checkbox input[type="checkbox"] {
+        width: auto;
+        margin-right: 0.75rem;
+    }
+
+    .form-group.checkbox label {
+        margin-bottom: 0;
+    }
+
+    .required {
+        color: #ef4444;
+    }
+
+    .text-danger {
+        color: #ef4444;
+        font-size: 0.875rem;
+        display: block;
+        margin-top: 0.25rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+    }
+
+    .btn-primary, .btn-secondary {
+        padding: 0.625rem 1.5rem;
+        border: none;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background-color: #27ae60;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #229954;
+    }
+
+    .btn-secondary {
+        background-color: #e5e7eb;
+        color: #374151;
+    }
+
+    .btn-secondary:hover {
+        background-color: #d1d5db;
+    }
+</style>

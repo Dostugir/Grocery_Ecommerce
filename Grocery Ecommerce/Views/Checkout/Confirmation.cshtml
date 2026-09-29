@@ -1,0 +1,108 @@
+﻿@model Grocery_Ecommerce.Models.Order
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<link rel="stylesheet" href="~/css/confirmation.css" />
+
+<div class="page-container">
+    <!-- Success Banner -->
+    <div class="success-banner">
+        <div class="success-icon">✅</div>
+        <h1>Order Confirmed!</h1>
+        <p>Thank you for your purchase. Your order has been successfully placed.</p>
+    </div>
+
+    <!-- Order Details -->
+    <div class="confirmation-header">
+        <div class="order-details">
+            <div class="detail-item">
+                <div class="detail-label">Order Number</div>
+                <div class="detail-value">#@Model.OrderId</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Order Date</div>
+                <div class="detail-value">@Model.CreatedAt.ToString("MMM dd, yyyy")</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Order Time</div>
+                <div class="detail-value">@Model.CreatedAt.ToString("hh:mm tt")</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Total Amount</div>
+                <div class="detail-value highlight">@Model.TotalAmount.ToString("0.00")Tk</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="confirmation-items">
+        <h2>Order Items</h2>
+        @{
+            var items = (IEnumerable<Grocery_Ecommerce.Models.OrderItem>)ViewBag.Items;
+            int itemNumber = 1;
+        }
+        @foreach (var it in items)
+        {
+            <div class="order-item">
+                <div class="item-number">@itemNumber</div>
+                <div class="item-info">
+                    <div class="item-name">@it.Product?.Name</div>
+                    <div class="item-qty">Quantity: @it.Quantity unit(s)</div>
+                </div>
+                <div class="item-total">@(it.Quantity* it.Price)Tk</div>
+            </div>
+            itemNumber++;
+        }
+    </div>
+
+    <!-- Order Summary -->
+    <div class="confirmation-summary">
+        <h2>Order Summary</h2>
+        
+        <div class="summary-row">
+            <span>Subtotal:</span>
+            <span>@(Model.TotalAmount / 1.05m)Tk</span>
+        </div>
+        
+        <div class="summary-row">
+            <span>Delivery:</span>
+            <span style="color: var(--success);">FREE</span>
+        </div>
+        
+        <div class="summary-row">
+            <span>Tax (5%):</span>
+            <span>@((Model.TotalAmount / 1.05m) * 0.05m)Tk</span>
+        </div>
+        
+        <div class="summary-row total">
+            <span>Total Amount:</span>
+            <span class="total-amount">@Model.TotalAmount.ToString("0.00")Tk</span>
+        </div>
+    </div>
+
+    <!-- Next Steps -->
+    <div class="next-steps">
+        <h3>What happens next?</h3>
+        <ul class="steps-list">
+            <li>You will receive a confirmation email shortly with your order details</li>
+            <li>Your order will be picked and packed within 2-4 hours</li>
+            <li>Delivery updates will be sent to your mobile number</li>
+            <li>Track your order anytime from your account dashboard</li>
+        </ul>
+    </div>
+
+    <!-- Actions -->
+    <div class="confirmation-actions">
+        <a href="/Orders" class="btn btn-primary">View My Orders</a>
+        <a href="/Products" class="btn btn-secondary">Continue Shopping</a>
+    </div>
+
+    <!-- Support Card -->
+    <div class="support-card">
+        <h3>Need Help?</h3>
+        <p>Have questions about your order? Our support team is here to help.</p>
+        <a href="/Contact" class="support-link">Contact Support</a>
+    </div>
+</div>

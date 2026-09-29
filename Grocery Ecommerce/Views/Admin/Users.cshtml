@@ -1,0 +1,55 @@
+@model IEnumerable<Grocery_Ecommerce.Models.User>
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewData["Title"] = "Users Management";
+}
+
+<div class="admin-header">
+    <div>
+        <h2>Users Management</h2>
+        <p style="color: #7f8c8d; margin: 5px 0;">View and manage all registered customers</p>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="table-responsive-admin">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email Address</th>
+                    <th>Phone</th>
+                    <th>Joined Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@user.FullName</strong>
+                        </td>
+                        <td>
+                            @user.Email
+                        </td>
+                        <td>
+                            @(string.IsNullOrEmpty(user.PhoneNumber) ? "N/A" : user.PhoneNumber)
+                        </td>
+                        <td>
+                            @user.CreatedAt.ToString("dd MMM yyyy")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="admin-card">
+        <p style="text-align: center; color: #7f8c8d; padding: 30px;">
+            No users found yet.
+        </p>
+    </div>
+}

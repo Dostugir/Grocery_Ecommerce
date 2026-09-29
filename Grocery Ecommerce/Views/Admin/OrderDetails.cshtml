@@ -1,0 +1,261 @@
+@model Grocery_Ecommerce.Models.Order
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewData["Title"] = "Order Details";
+}
+
+<style>
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .status-pending {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-processing {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+
+    .status-shipped {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-delivered {
+        background-color: #d1f5e2;
+        color: #165e3a;
+    }
+
+    .status-cancelled {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    .status-update-section {
+        background: #f9fafb;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
+        margin-top: 1rem;
+    }
+
+    .status-update-form {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-end;
+    }
+
+    .status-update-form select {
+        flex: 1;
+        padding: 0.625rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        font-size: 0.95rem;
+    }
+
+    .status-update-form button {
+        padding: 0.625rem 1.25rem;
+        background-color: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .status-update-form button:hover {
+        background-color: #229954;
+    }
+
+    .alert-success {
+        background-color: #d1fae5;
+        color: #065f46;
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid #10b981;
+    }
+
+    .alert-error {
+        background-color: #fee2e2;
+        color: #991b1b;
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid #ef4444;
+    }
+</style>
+
+<div class="admin-header">
+    <div>
+        <h2>Order #@Model.OrderId Details</h2>
+        <p style="color: #7f8c8d; margin: 5px 0;">View complete order information</p>
+    </div>
+    <a href="@Url.Action("Orders", "Admin")" class="btn btn-primary-admin" style="background: #95a5a6; text-decoration: none;">Back to Orders</a>
+</div>
+
+<div id="alertContainer"></div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="admin-card">
+            <h4 style="margin-top: 0; color: #2c3e50;">Order Information</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                <div>
+                    <p style="color: #7f8c8d; font-size: 0.9rem; margin: 0;">Customer ID</p>
+                    <p style="font-weight: 600; margin: 5px 0;">@Model.UserId</p>
+                </div>
+                <div>
+                    <p style="color: #7f8c8d; font-size: 0.9rem; margin: 0;">Order Date</p>
+                    <p style="font-weight: 600; margin: 5px 0;">@Model.CreatedAt.ToString("dd MMM yyyy, HH:mm")</p>
+                </div>
+                <div>
+                    <p style="color: #7f8c8d; font-size: 0.9rem; margin: 0;">Total Amount</p>
+                    <p style="font-weight: 600; margin: 5px 0; font-size: 1.2rem; color: #27ae60;">@Model.TotalAmount.ToString("0.00")Tk</p>
+                </div>
+                <div>
+                    <p style="color: #7f8c8d; font-size: 0.9rem; margin: 0;">Current Status</p>
+                    <p style="margin: 5px 0;">
+                        <span class="status-badge status-@Model.OrderStatus.ToLower().Replace(" ", "-")">@Model.OrderStatus</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="status-update-section">
+                <h5 style="margin-top: 0; color: #2c3e50; margin-bottom: 1rem;">Update Order Status</h5>
+                <div class="status-update-form">
+                    <select id="statusSelect" onchange="updateOrderStatus()">
+                        <option value="">-- Select New Status --</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                    <button type="button" onclick="updateOrderStatus()">Update Status</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <h4 style="margin-top: 0; color: #2c3e50;">Order Items</h4>
+            @if (Model.Items.Any())
+            {
+                <div class="table-responsive-admin">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@item.Product?.Name</strong>
+                                    </td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.Price.ToString("0.00")Tk</td>
+                                    <td>
+                                        <strong>@(item.Price* item.Quantity)Tk</strong>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p style="text-align: center; color: #7f8c8d;">No items in this order.</p>
+            }
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="admin-card" style="background: #f0f8f5; border-left-color: #27ae60;">
+            <h4 style="margin-top: 0; color: #27ae60;">Order Summary</h4>
+            <div style="margin: 20px 0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #d1d5db;">
+                    <span>Subtotal:</span>
+                    <strong>@Model.TotalAmount.ToString("0.00")Tk</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #d1d5db;">
+                    <span>Shipping:</span>
+                    <strong>0.00Tk</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 700; color: #27ae60;">
+                    <span>Total:</span>
+                    <span>@Model.TotalAmount.ToString("0.00")Tk</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set current status as selected on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusSelect = document.getElementById('statusSelect');
+        statusSelect.value = '@Model.OrderStatus';
+    });
+
+    async function updateOrderStatus() {
+        const selectElement = document.getElementById('statusSelect');
+        const status = selectElement.value;
+
+        if (!status) {
+            showAlert('Please select a status', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/Admin/UpdateOrderStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: `orderId=@Model.OrderId&status=${encodeURIComponent(status)}`
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showAlert(data.message, 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showAlert(data.message || 'Failed to update status', 'error');
+            }
+        } catch (error) {
+            showAlert('An error occurred while updating status', 'error');
+            console.error('Error:', error);
+        }
+    }
+
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alertContainer');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert-${type}`;
+        alertDiv.textContent = message;
+        alertContainer.innerHTML = '';
+        alertContainer.appendChild(alertDiv);
+
+        // Auto-remove error alerts
+        if (type === 'error') {
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+    }
+</script>

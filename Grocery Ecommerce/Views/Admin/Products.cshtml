@@ -1,0 +1,61 @@
+@model IEnumerable<Grocery_Ecommerce.Models.Product>
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewData["Title"] = "Products Management";
+}
+
+<div class="admin-header">
+    <div>
+        <h2>Products Management</h2>
+        <p style="color: #7f8c8d; margin: 5px 0;">Manage all products in your store</p>
+    </div>
+    <a href="@Url.Action("CreateProduct", "Admin")" class="btn btn-primary-admin">Add New Product</a>
+</div>
+
+@if (Model.Any())
+{
+    <div class="table-responsive-admin">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@product.Name</strong>
+                        </td>
+                        <td>
+                            <span class="badge-status badge-success">@product.Category?.Name</span>
+                        </td>
+                        <td>
+                            <strong>@product.Price.ToString("0.00")Tk</strong>
+                        </td>
+                        <td>
+                            @product.Quantity @product.UnitType
+                        </td>
+                        <td>
+                            <a href="@Url.Action("EditProduct", "Admin", new { id = product.ProductId })" class="btn btn-action btn-edit">Edit</a>
+                            <a href="@Url.Action("DeleteProduct", "Admin", new { id = product.ProductId })" class="btn btn-action btn-delete">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="admin-card">
+        <p style="text-align: center; color: #7f8c8d; padding: 30px;">
+            No products found. <a href="@Url.Action("CreateProduct", "Admin")">Create one now</a>
+        </p>
+    </div>
+}

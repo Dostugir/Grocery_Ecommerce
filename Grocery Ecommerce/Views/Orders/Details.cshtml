@@ -1,0 +1,573 @@
+﻿@using System.Security.Cryptography
+@model Grocery_Ecommerce.Models.Order
+@inject Grocery_Ecommerce.Data.AppDbContext _context
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = $"Order #{Model.OrderId}";
+    var address = _context.Addresses.FirstOrDefault(a => a.AddressId == Model.DeliveryAddressId);
+}
+
+<style>
+    .order-detail-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .order-detail-header {
+        margin-bottom: 40px;
+    }
+
+    .order-detail-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 16px 0;
+    }
+
+    .breadcrumb-nav {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6b7280;
+        font-size: 0.95rem;
+    }
+
+    .breadcrumb-nav a {
+        color: #667eea;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .breadcrumb-nav a:hover {
+        color: #5568d3;
+    }
+
+    .order-status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+
+    .status-pending {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-processing {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+
+    .status-shipped {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-delivered {
+        background-color: #d1f5e2;
+        color: #165e3a;
+    }
+
+    .status-cancelled {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    .status-timeline {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .status-timeline h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 20px 0;
+    }
+
+    .timeline {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .timeline-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        position: relative;
+    }
+
+    .timeline-dot {
+        width: 40px;
+        height: 40px;
+        background: #e5e7eb;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: #6b7280;
+        font-weight: 700;
+        font-size: 1.2rem;
+        border: 3px solid white;
+    }
+
+    .timeline-dot.completed {
+        background: #27ae60;
+        color: white;
+    }
+
+    .timeline-dot.active {
+        background: #667eea;
+        color: white;
+    }
+
+    .timeline-dot::before {
+        content: "?";
+    }
+
+    .timeline-content {
+        flex: 1;
+        padding-top: 4px;
+    }
+
+    .timeline-title {
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .timeline-date {
+        color: #6b7280;
+        font-size: 0.85rem;
+    }
+
+    .timeline-item.completed .timeline-title,
+    .timeline-item.completed .timeline-date {
+        opacity: 0.7;
+    }
+
+    .delivery-address-section {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .delivery-address-section h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 16px 0;
+    }
+
+    .address-info {
+        background: #f9fafb;
+        padding: 16px;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+    }
+
+    .address-line {
+        color: #374151;
+        line-height: 1.6;
+        margin-bottom: 6px;
+    }
+
+    .address-line:last-child {
+        margin-bottom: 0;
+    }
+
+    .address-label {
+        color: #6b7280;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .order-content {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 30px;
+    }
+
+    .order-items-section {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .order-items-section h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 20px 0;
+    }
+
+    .order-item {
+        display: flex;
+        gap: 16px;
+        padding: 16px 0;
+        border-bottom: 1px solid #f3f4f6;
+        align-items: center;
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-image {
+        width: 100px;
+        height: 100px;
+        background: #f3f4f6;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .item-details {
+        flex: 1;
+    }
+
+    .item-name {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #1f2937;
+        margin-bottom: 6px;
+    }
+
+    .item-price {
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+
+    .item-subtotal {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #27ae60;
+    }
+
+    .order-summary-sidebar {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+
+    .order-summary-sidebar h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 20px 0;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        color: #6b7280;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .summary-row.total {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1f2937;
+        border-bottom: none;
+        padding-top: 16px;
+    }
+
+    .summary-row.total span:last-child {
+        color: #27ae60;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .btn-secondary {
+        padding: 12px;
+        background: #f3f4f6;
+        color: #1f2937;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        transition: background 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background: #e5e7eb;
+    }
+
+    .btn-primary {
+        padding: 12px;
+        background: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .btn-primary:hover {
+        background: #229954;
+    }
+</style>
+
+<div class="order-detail-container">
+    <div class="order-detail-header">
+        <h1>Order #@Model.OrderId</h1>
+        <div class="breadcrumb-nav">
+            <a href="@Url.Action("Index", "Home")">Home</a>
+            <span>/</span>
+            <a href="@Url.Action("Index", "Orders")">My Orders</a>
+            <span>/</span>
+            <span>Order #@Model.OrderId</span>
+        </div>
+        
+        <!-- Dynamic Status Badge -->
+        <span class="order-status-badge status-@Model.OrderStatus.ToLower().Replace(" ", "-")">
+            @Model.OrderStatus
+        </span>
+    </div>
+
+    <!-- Dynamic Timeline Based on Order Status -->
+    <div class="status-timeline">
+        <h2>Order Timeline</h2>
+        <div class="timeline">
+            @{
+                var statuses = new[] { "Pending", "Processing", "Shipped", "Delivered" };
+                var currentStatusIndex = Array.IndexOf(statuses, Model.OrderStatus);
+            }
+            
+            @for (int i = 0; i < statuses.Length; i++)
+            {
+                var isCompleted = i < currentStatusIndex;
+                var isActive = i == currentStatusIndex;
+                var statusDate = i switch
+                {
+                    0 => Model.CreatedAt,
+                    1 => Model.CreatedAt.AddMinutes(15),
+                    2 => Model.CreatedAt.AddHours(2),
+                    3 => Model.CreatedAt.AddHours(24),
+                    _ => DateTime.Now
+                };
+
+                <div class="timeline-item @(isCompleted ? "completed" : "") @(isActive ? "active" : "")">
+                    <div class="timeline-dot @(isCompleted || isActive ? "completed" : "") @(isActive ? "active" : "")"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">
+                            @(statuses[i] switch
+                            {
+                                "Pending" => "Order Placed",
+                                "Processing" => "Order Confirmed",
+                                "Shipped" => "Picked & Packed",
+                                "Delivered" => "Order Delivered",
+                                _ => "Unknown"
+                            })
+                        </div>
+                        <div class="timeline-date">@statusDate.ToString("MMMM dd, yyyy – h:mm tt")</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Delivery Address Section -->
+    @if (address != null)
+    {
+        <div class="delivery-address-section">
+            <h3>Delivery Address</h3>
+            <div class="address-info">
+                <span class="address-label">Shipping To:</span>
+                <div class="address-line">
+                    <strong>@address.Street</strong>
+                </div>
+                <div class="address-line">
+                    @address.City, @address.State @address.PostalCode
+                </div>
+                <div class="address-line">
+                    @address.Country
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="order-content">
+        <div>
+            <div class="order-items-section">
+                <h2>Order Items</h2>
+                @{
+                    var items = (IEnumerable<Grocery_Ecommerce.Models.OrderItem>)ViewBag.Items;
+                }
+                @if (items != null && items.Any())
+                {
+                    @foreach (var item in items)
+                    {
+                        <div class="order-item">
+                            <div class="item-image">
+                                <img src="@(string.IsNullOrEmpty(item.Product?.ImageUrl) ? "https://via.placeholder.com/100" : item.Product.ImageUrl)" 
+                                     alt="@item.Product?.Name" 
+                                     onerror="this.src='https://via.placeholder.com/100'" />
+                            </div>
+                            <div class="item-details">
+                                <div class="item-name">@item.Product?.Name</div>
+                                <div class="item-price">
+                                    Qty: <strong>@item.Quantity</strong> × @item.Price.ToString("0.00")Tk
+                                </div>
+                            </div>
+                            <div class="item-subtotal">
+                                @(item.Quantity * item.Price)Tk
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="order-summary-sidebar">
+            <h3>Order Summary</h3>
+
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span>@(Model.TotalAmount / 1.05m)Tk</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Delivery:</span>
+                <span style="color: #27ae60; font-weight: 600;">FREE</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Tax (5%):</span>
+                <span>@((Model.TotalAmount / 1.05m) * 0.05m)Tk</span>
+            </div>
+
+            <div class="summary-row total">
+                <span>Total:</span>
+                <span>@Model.TotalAmount.ToString("0.00")Tk</span>
+            </div>
+
+            <div class="action-buttons">
+                <a href="@Url.Action("Index", "Orders")" class="btn-secondary">Back to Orders</a>
+                <button class="btn-primary" onclick="reorderItems(@Model.OrderId)">Reorder Items</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@keyframes slideInAlert {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @@keyframes slideOutAlert {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+</style>
+
+<script>
+    function reorderItems(orderId) {
+        if (!confirm('Add all items from this order to your cart?')) {
+            return;
+        }
+
+        fetch('/Orders/ReorderItems', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: 'orderId=' + orderId
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                setTimeout(() => {
+                    if (data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        location.reload();
+                    }
+                }, 1500);
+            } else {
+                showAlert(data.message || 'Failed to add items to cart', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('An error occurred while reordering', 'error');
+        });
+    }
+
+    function showAlert(message, type) {
+        const alert = document.createElement('div');
+        alert.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background-color: ${type === 'success' ? '#d1fae5' : '#fee2e2'};
+            color: ${type === 'success' ? '#065f46' : '#991b1b'};
+            border-left: 4px solid ${type === 'success' ? '#10b981' : '#ef4444'};
+            border-radius: 0.375rem;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: slideInAlert 0.3s ease;
+        `;
+        alert.innerHTML = `<span>${message}</span>`;
+        document.body.appendChild(alert);
+
+        setTimeout(() => {
+            alert.style.animation = 'slideOutAlert 0.3s ease';
+            setTimeout(() => alert.remove(), 300);
+        }, 4000);
+    }
+</script>

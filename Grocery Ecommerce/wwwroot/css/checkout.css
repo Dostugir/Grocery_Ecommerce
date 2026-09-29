@@ -1,0 +1,266 @@
+/* ===============================
+   CHECKOUT PAGE – PROFESSIONAL UI
+   =============================== */
+
+:root {
+    --primary: #27ae60;
+    --danger: #dc2626;
+    --border: #e5e7eb;
+    --muted: #6b7280;
+    --bg: #f9fafb;
+    --card: #ffffff;
+    --radius: 12px;
+}
+
+/* Page background */
+body {
+    background-color: var(--bg);
+}
+
+/* Main layout */
+.checkout-container {
+    max-width: 1200px;
+    margin: 2.5rem auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    padding: 0 1rem;
+}
+
+/* Cards */
+.checkout-items,
+.order-summary {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+}
+
+    /* Headings */
+    .checkout-items h2,
+    .order-summary h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1.25rem;
+    }
+
+/* ===============================
+   CART ITEMS
+   =============================== */
+
+.checkout-item {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+    .checkout-item:last-child {
+        border-bottom: none;
+    }
+
+.item-image img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.item-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.item-price {
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+/* Quantity */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+    .quantity-control button {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: #f3f4f6;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .quantity-control input {
+        width: 42px;
+        height: 28px;
+        text-align: center;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+    }
+
+/* Remove */
+.remove-btn {
+    background: none;
+    border: none;
+    color: var(--danger);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+/* Subtotal */
+.item-subtotal {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* ===============================
+   ORDER SUMMARY
+   =============================== */
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.45rem 0;
+    font-size: 0.95rem;
+}
+
+    .summary-row.total {
+        border-top: 1px solid var(--border);
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        font-weight: 700;
+        font-size: 1.05rem;
+    }
+
+.total-amount {
+    color: var(--primary);
+}
+
+/* Promo */
+.promo-section {
+    margin-top: 1rem;
+}
+
+.promo-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+    .promo-input-group input {
+        flex: 1;
+        padding: 0.6rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+
+    .promo-input-group button {
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        border: none;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 600;
+    }
+
+/* ===============================
+   ADDRESS SECTION
+   =============================== */
+
+.address-select-wrapper select {
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+/* ===============================
+   BUTTONS
+   =============================== */
+
+.btn-primary {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--primary);
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
+
+    .btn-primary:hover {
+        opacity: 0.9;
+    }
+
+.btn-secondary {
+    display: block;
+    text-align: center;
+    margin-top: 0.75rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+/* ===============================
+   TRUST BADGES
+   =============================== */
+
+.trust-indicators {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+    .trust-indicators div {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+    }
+
+.trust-badge {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ecfdf5;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* ===============================
+   EMPTY CART
+   =============================== */
+
+.empty-cart-state {
+    max-width: 500px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background: var(--card);
+    border-radius: var(--radius);
+    text-align: center;
+    border: 1px solid var(--border);
+}
+
+/* ===============================
+   MOBILE
+   =============================== */
+
+@media (max-width: 900px) {
+    .checkout-container {
+        grid-template-columns: 1fr;
+    }
+}

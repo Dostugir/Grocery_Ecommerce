@@ -1,0 +1,183 @@
+@model Grocery_Ecommerce.Models.LoginViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Sign in";
+}
+
+<style>
+    .auth-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+    }
+
+    .auth-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        padding: 40px;
+        width: 100%;
+        max-width: 420px;
+    }
+
+    .auth-card h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 10px 0;
+    }
+
+    .auth-card p {
+        color: #6b7280;
+        margin: 0 0 25px 0;
+        font-size: 0.95rem;
+    }
+
+    .form-group-auth {
+        margin-bottom: 20px;
+    }
+
+    .form-group-auth label {
+        display: block;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+
+    .form-group-auth input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .form-group-auth input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-check {
+        margin-bottom: 25px;
+    }
+
+    .form-check input {
+        width: 18px;
+        height: 18px;
+        margin-right: 8px;
+    }
+
+    .form-check label {
+        font-weight: 500;
+        color: #374151;
+        cursor: pointer;
+    }
+
+    .btn-signin {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-signin:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 25px;
+        color: #6b7280;
+    }
+
+    .auth-footer a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+    .auth-footer a:hover {
+        color: #764ba2;
+    }
+
+    .divider {
+        text-align: center;
+        margin: 25px 0;
+        font-size: 0.9rem;
+        color: #9ca3af;
+    }
+
+    .error-alert {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 12px 15px;
+        border-radius: 8px;
+        border-left: 4px solid #dc2626;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+    }
+
+    span.text-danger {
+        display: block;
+        color: #dc2626;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h3>Welcome Back</h3>
+        <p>Sign in to your account</p>
+
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ContainsKey(""))
+        {
+            <div class="error-alert">
+                @Html.ValidationSummary(true)
+            </div>
+        }
+
+        <form asp-controller="Account" asp-action="Login" method="post">
+            <div class="form-group-auth">
+                <label asp-for="Email">Email address</label>
+                <input asp-for="Email" type="email" placeholder="you@example.com" />
+                <span asp-validation-for="Email"></span>
+            </div>
+
+            <div class="form-group-auth">
+                <label asp-for="Password">Password</label>
+                <input asp-for="Password" type="password" placeholder="••••••••" />
+                <span asp-validation-for="Password"></span>
+            </div>
+
+            <div class="form-check">
+                <input asp-for="RememberMe" type="checkbox" id="rememberMe" />
+                <label for="rememberMe">Remember me for 30 days</label>
+            </div>
+
+            <button type="submit" class="btn-signin">Sign In</button>
+        </form>
+
+        <div class="divider">OR</div>
+
+        <div class="auth-footer">
+            Don't have an account? <a asp-controller="Account" asp-action="Register">Create one now</a>
+            <br />
+            <a asp-controller="Home" asp-action="Index" style="font-weight: 400;">Back to Home</a>
+        </div>
+    </div>
+</div>

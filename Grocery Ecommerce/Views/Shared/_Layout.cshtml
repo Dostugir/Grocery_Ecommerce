@@ -1,0 +1,16 @@
+@{
+    var userId = Context.Session.GetInt32("UserId");
+    var adminId = Context.Session.GetInt32("AdminId");
+    var role = Context.Session.GetString("Role");
+
+    if (role == "Admin")
+    {
+        Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_UserLayout.cshtml";
+    }
+}
+
+@RenderBody()

@@ -1,0 +1,629 @@
+﻿@model IEnumerable<Grocery_Ecommerce.Models.CartItem>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Your Cart";
+}
+
+<style>
+    .cart-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .cart-header {
+        margin-bottom: 40px;
+    }
+
+    .cart-header h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 10px 0;
+    }
+
+    .cart-header p {
+        color: #6b7280;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .cart-content {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .cart-items {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .cart-item {
+        display: grid;
+        grid-template-columns: 120px 1fr auto auto auto;
+        gap: 20px;
+        padding: 24px;
+        border-bottom: 1px solid #f3f4f6;
+        align-items: center;
+        transition: background 0.2s;
+    }
+
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+
+    .cart-item:hover {
+        background: #fafbfc;
+    }
+
+    .item-image {
+        width: 120px;
+        height: 120px;
+        background: #f3f4f6;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .item-details {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .item-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .item-price {
+        color: #6b7280;
+        font-size: 1rem;
+    }
+
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f3f4f6;
+        border-radius: 8px;
+        padding: 6px;
+        width: fit-content;
+    }
+
+    .quantity-control button {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: white;
+        cursor: pointer;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #333;
+    }
+
+    .quantity-control button:hover {
+        background: #e5e7eb;
+        transform: scale(1.05);
+    }
+
+    .quantity-control button:active {
+        transform: scale(0.95);
+    }
+
+    .quantity-control button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: scale(1);
+    }
+
+    .quantity-control input {
+        width: 50px;
+        text-align: center;
+        border: none;
+        background: transparent;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 0 4px;
+    }
+
+    .item-subtotal {
+        font-weight: 700;
+        font-size: 1.4rem;
+        color: #27ae60;
+        text-align: right;
+        min-width: 100px;
+    }
+
+    .remove-btn {
+        padding: 8px 16px;
+        background: #fee2e2;
+        color: #dc2626;
+        border: 2px solid #fca5a5;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+
+    .remove-btn:hover {
+        background: #fecaca;
+        border-color: #f87171;
+        transform: translateY(-2px);
+    }
+
+    .remove-btn:active {
+        transform: translateY(0);
+    }
+
+    .remove-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .cart-summary {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 28px;
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+
+    .cart-summary h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 24px 0;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #f3f4f6;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 0;
+        color: #6b7280;
+        font-size: 1rem;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .summary-row span:first-child {
+        font-weight: 500;
+    }
+
+    .summary-row span:last-child {
+        font-weight: 600;
+        text-align: right;
+    }
+
+    .summary-row.total {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1f2937;
+        border-bottom: none;
+        padding-top: 18px;
+        margin-top: 12px;
+    }
+
+    .summary-row.total span:last-child {
+        color: #27ae60;
+        font-size: 1.5rem;
+    }
+
+    .btn-checkout {
+        width: 100%;
+        padding: 16px;
+        background: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1.05rem;
+        cursor: pointer;
+        margin-top: 24px;
+        transition: all 0.3s;
+    }
+
+    .btn-checkout:hover {
+        background: #229954;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(39, 174, 96, 0.3);
+    }
+
+    .btn-checkout:active {
+        transform: translateY(0);
+    }
+
+    .btn-continue-shopping {
+        width: 100%;
+        padding: 14px;
+        background: #f3f4f6;
+        color: #1f2937;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 12px;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn-continue-shopping:hover {
+        background: #e5e7eb;
+        border-color: #d1d5db;
+        transform: translateY(-2px);
+    }
+
+    .empty-cart {
+        background: white;
+        border-radius: 12px;
+        padding: 80px 40px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .empty-cart h3 {
+        font-size: 2rem;
+        color: #1f2937;
+        margin-bottom: 16px;
+        font-weight: 700;
+    }
+
+    .empty-cart p {
+        color: #6b7280;
+        margin-bottom: 32px;
+        font-size: 1.05rem;
+    }
+
+    .empty-cart a {
+        padding: 14px 32px;
+        background: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-block;
+        transition: all 0.3s;
+    }
+
+    .empty-cart a:hover {
+        background: #229954;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(39, 174, 96, 0.3);
+    }
+
+    .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 14px 20px;
+        background: #d1fae5;
+        color: #065f46;
+        border-left: 4px solid #10b981;
+        border-radius: 6px;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        animation: slideIn 0.3s ease;
+        font-weight: 600;
+    }
+
+    .toast.error {
+        background: #fee2e2;
+        color: #991b1b;
+        border-left-color: #ef4444;
+    }
+
+    @@keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @@keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+
+    @@media (max-width: 1024px) {
+        .cart-content {
+            grid-template-columns: 1fr;
+        }
+
+        .cart-summary {
+            position: relative;
+            top: 0;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .cart-header h2 {
+            font-size: 2rem;
+        }
+
+        .cart-item {
+            grid-template-columns: 100px 1fr;
+            gap: 16px;
+        }
+
+        .item-image {
+            width: 100px;
+            height: 100px;
+            grid-column: 1;
+            grid-row: 1 / 3;
+        }
+
+        .item-details {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .quantity-control {
+            grid-column: 2;
+            grid-row: 2;
+            justify-self: start;
+        }
+
+        .item-subtotal {
+            grid-column: 2;
+            grid-row: 3;
+            text-align: left;
+            margin-top: 8px;
+        }
+
+        .remove-btn {
+            grid-column: 1 / 3;
+            width: 100%;
+            margin-top: 12px;
+        }
+    }
+</style>
+
+<div class="cart-container">
+    <div class="cart-header">
+        <h2>Shopping Cart</h2>
+        <p>@(Model.Any() ? $"You have {Model.Count()} item(s) in your cart" : "Your cart is currently empty")</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-cart">
+            <h3>Your Cart is Empty</h3>
+            <p>Looks like you haven't added anything to your cart yet. Start shopping to add some fresh groceries!</p>
+            <a href="@Url.Action("List", "Product")">Continue Shopping</a>
+        </div>
+    }
+    else
+    {
+        <div class="cart-content">
+            <div class="cart-items">
+                @foreach (var item in Model)
+                {
+                    <div class="cart-item" id="cart-item-@item.CartItemId">
+                        <div class="item-image">
+                            <img src="@(string.IsNullOrEmpty(item.Product?.ImageUrl) ? "https://via.placeholder.com/120" : item.Product.ImageUrl)" 
+                                 alt="@item.Product?.Name" 
+                                 onerror="this.src='https://via.placeholder.com/120'" />
+                        </div>
+                        <div class="item-details">
+                            <div class="item-name">@item.Product?.Name</div>
+                            <div class="item-price">@item.Product?.Price.ToString("0.00")Tk per unit</div>
+                        </div>
+                        <div class="quantity-control" id="qty-control-@item.CartItemId">
+                            <button type="button" onclick="decreaseQuantity(@item.CartItemId)" data-action="decrease">−</button>
+                            <input type="number" id="qty-@item.CartItemId" value="@item.Quantity" readonly />
+                            <button type="button" onclick="increaseQuantity(@item.CartItemId)" data-action="increase">+</button>
+                        </div>
+                        <div class="item-subtotal" id="subtotal-@item.CartItemId">
+                            @((item.Quantity * (item.Product?.Price ?? 0)).ToString("0.00"))Tk
+                        </div>
+                        <button class="remove-btn" onclick="removeItem(@item.CartItemId)" type="button" data-action="remove">Remove</button>
+                    </div>
+                }
+            </div>
+
+            <div class="cart-summary">
+                <h3>Order Summary</h3>
+                
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="summary-subtotal">@Model.Sum(x => x.Quantity * (x.Product?.Price ?? 0)).ToString("0.00")Tk</span>
+                </div>
+                
+                <div class="summary-row">
+                    <span>Delivery Charge:</span>
+                    <span style="color: #27ae60; font-weight: 600;">FREE</span>
+                </div>
+                
+                <div class="summary-row">
+                    <span>Tax (5%):</span>
+                    <span id="summary-tax">@((Model.Sum(x => x.Quantity * (x.Product?.Price ?? 0)) * 0.05m).ToString("0.00"))Tk</span>
+                </div>
+                
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span id="summary-total">@((Model.Sum(x => x.Quantity * (x.Product?.Price ?? 0)) * 1.05m).ToString("0.00"))Tk</span>
+                </div>
+
+                <a href="@Url.Action("Index", "Checkout")" class="btn-checkout">Proceed to Checkout</a>
+                <a href="@Url.Action("List", "Product")" class="btn-continue-shopping">Continue Shopping</a>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    function increaseQuantity(cartItemId) {
+        const qtyInput = document.getElementById(`qty-${cartItemId}`);
+        const currentQty = parseInt(qtyInput.value) || 1;
+        updateQuantity(cartItemId, currentQty + 1);
+    }
+
+    function decreaseQuantity(cartItemId) {
+        const qtyInput = document.getElementById(`qty-${cartItemId}`);
+        const currentQty = parseInt(qtyInput.value) || 1;
+        if (currentQty > 1) {
+            updateQuantity(cartItemId, currentQty - 1);
+        }
+    }
+
+    function updateQuantity(cartItemId, newQuantity) {
+        const button = event?.target;
+        if (button) {
+            button.disabled = true;
+        }
+
+        fetch('/Cart/UpdateQuantity', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ cartItemId: cartItemId, quantity: newQuantity })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Update quantity display
+                document.getElementById(`qty-${cartItemId}`).value = newQuantity;
+                
+                // Update item subtotal
+                document.getElementById(`subtotal-${cartItemId}`).textContent = '৳' + parseFloat(data.itemSubtotal).toFixed(2);
+                
+                // Update summary
+                document.getElementById('summary-subtotal').textContent = '৳' + parseFloat(data.subtotal).toFixed(2);
+                document.getElementById('summary-tax').textContent = '৳' + parseFloat(data.tax).toFixed(2);
+                document.getElementById('summary-total').textContent = '৳' + parseFloat(data.total).toFixed(2);
+                
+                showToast('Quantity updated successfully', false);
+            } else {
+                showToast(data.message || 'Failed to update quantity', true);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('An error occurred while updating quantity', true);
+        })
+        .finally(() => {
+            if (button) {
+                button.disabled = false;
+            }
+        });
+    }
+
+    function removeItem(cartItemId) {
+        if (!confirm('Are you sure you want to remove this item from your cart?')) {
+            return;
+        }
+
+        const removeBtn = event?.target;
+        if (removeBtn) {
+            removeBtn.disabled = true;
+        }
+
+        fetch('/Cart/RemoveItem', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ cartItemId: cartItemId })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Remove item from DOM with animation
+                const cartItem = document.getElementById(`cart-item-${cartItemId}`);
+                if (cartItem) {
+                    cartItem.style.opacity = '0';
+                    cartItem.style.transform = 'translateX(-100%)';
+                    cartItem.style.transition = 'all 0.3s ease';
+                    
+                    setTimeout(() => {
+                        cartItem.remove();
+                        
+                        // Update summary
+                        document.getElementById('summary-subtotal').textContent = '৳' + parseFloat(data.subtotal).toFixed(2);
+                        document.getElementById('summary-tax').textContent = '৳' + parseFloat(data.tax).toFixed(2);
+                        document.getElementById('summary-total').textContent = '৳' + parseFloat(data.total).toFixed(2);
+                        
+                        // If cart is now empty, reload page
+                        if (data.itemCount === 0) {
+                            setTimeout(() => location.reload(), 500);
+                        }
+                        
+                        showToast('Item removed from cart', false);
+                    }, 300);
+                }
+            } else {
+                showToast(data.message || 'Failed to remove item', true);
+                if (removeBtn) {
+                    removeBtn.disabled = false;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('An error occurred while removing the item', true);
+            if (removeBtn) {
+                removeBtn.disabled = false;
+            }
+        });
+    }
+
+    function showToast(message, isError) {
+        const toast = document.createElement('div');
+        toast.className = `toast ${isError ? 'error' : ''}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+</script>

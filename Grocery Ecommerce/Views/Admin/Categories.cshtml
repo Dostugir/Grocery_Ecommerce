@@ -1,0 +1,51 @@
+@model IEnumerable<Grocery_Ecommerce.Models.Category>
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewData["Title"] = "Categories";
+}
+
+<div class="admin-header">
+    <div>
+        <h2>Categories Management</h2>
+        <p style="color: #7f8c8d; margin: 5px 0;">Manage all product categories</p>
+    </div>
+    <a href="@Url.Action("CreateCategory", "Admin")" class="btn btn-primary-admin">Add New Category</a>
+</div>
+
+@if (Model.Any())
+{
+    <div class="table-responsive-admin">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Category Name</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@category.Name</strong>
+                        </td>
+                        <td>@(string.IsNullOrEmpty(category.Description) ? "N/A" : category.Description)</td>
+                        <td>
+                            <a href="@Url.Action("EditCategory", "Admin", new { id = category.CategoryId })" class="btn btn-action btn-edit">Edit</a>
+                            <a href="@Url.Action("DeleteCategory", "Admin", new { id = category.CategoryId })" class="btn btn-action btn-delete">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="admin-card">
+        <p style="text-align: center; color: #7f8c8d; padding: 30px;">
+            No categories found. <a href="@Url.Action("CreateCategory", "Admin")">Create one now</a>
+        </p>
+    </div>
+}

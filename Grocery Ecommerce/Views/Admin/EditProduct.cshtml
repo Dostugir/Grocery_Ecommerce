@@ -1,0 +1,62 @@
+@model Grocery_Ecommerce.Models.Product
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewData["Title"] = "Edit Product";
+}
+
+<div class="admin-header">
+    <h2>Edit Product</h2>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="admin-card">
+            <form asp-controller="Admin" asp-action="EditProduct" method="post">
+                <input type="hidden" asp-for="ProductId" />
+
+                <div class="form-group-admin">
+                    <label asp-for="Name">Product Name</label>
+                    <input asp-for="Name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="form-group-admin">
+                    <label asp-for="Price">Price (Tk)</label>
+                    <input asp-for="Price" type="number" step="0.01" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
+                <div class="form-group-admin">
+                    <label asp-for="CategoryId">Category</label>
+                    <select asp-for="CategoryId" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(ViewBag.Categories, "CategoryId", "Name"))">
+                        <option value="">-- Select Category --</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group-admin">
+                    <label asp-for="ImageUrl">Image URL</label>
+                    <input asp-for="ImageUrl" />
+                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                </div>
+
+                <div class="form-group-admin">
+                    <label asp-for="Quantity">Quantity</label>
+                    <input asp-for="Quantity" type="number" />
+                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                </div>
+
+                <div class="form-group-admin">
+                    <label asp-for="UnitType">Unit Type</label>
+                    <input asp-for="UnitType" />
+                    <span asp-validation-for="UnitType" class="text-danger"></span>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button type="submit" class="btn btn-primary-admin">Update Product</button>
+                    <a href="@Url.Action("Products", "Admin")" class="btn btn-primary-admin" style="background: #95a5a6; text-decoration: none;">Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

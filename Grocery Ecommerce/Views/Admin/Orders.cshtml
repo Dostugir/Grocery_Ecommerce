@@ -1,0 +1,122 @@
+@model IEnumerable<Grocery_Ecommerce.Models.Order>
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewData["Title"] = "Orders Management";
+}
+
+<style>
+    .status-badge {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+
+    .status-pending {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-processing {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+
+    .status-shipped {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-delivered {
+        background-color: #d1f5e2;
+        color: #165e3a;
+    }
+
+    .status-cancelled {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    .action-btn {
+        padding: 0.4rem 0.8rem;
+        margin: 0.2rem;
+        border: none;
+        border-radius: 0.3rem;
+        cursor: pointer;
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-view {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .btn-view:hover {
+        background-color: #2980b9;
+    }
+</style>
+
+<div class="admin-header">
+    <div>
+        <h2>Orders Management</h2>
+        <p style="color: #7f8c8d; margin: 5px 0;">View and manage all customer orders</p>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="table-responsive-admin">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer ID</th>
+                    <th>Items</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Order Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>#@order.OrderId</strong>
+                        </td>
+                        <td>
+                            @order.UserId
+                        </td>
+                        <td>
+                            <span class="badge-status badge-success">@order.Items.Count items</span>
+                        </td>
+                        <td>
+                            <strong>@order.TotalAmount.ToString("0.00")Tk</strong>
+                        </td>
+                        <td>
+                            <span class="status-badge status-@order.OrderStatus.ToLower().Replace(" ", "-")">@order.OrderStatus</span>
+                        </td>
+                        <td>
+                            @order.CreatedAt.ToString("dd MMM yyyy, HH:mm")
+                        </td>
+                        <td>
+                            <a href="@Url.Action("OrderDetails", "Admin", new { id = order.OrderId })" class="action-btn btn-view">View & Update</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="admin-card">
+        <p style="text-align: center; color: #7f8c8d; padding: 30px;">
+            No orders found yet.
+        </p>
+    </div>
+}

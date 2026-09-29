@@ -1,0 +1,487 @@
+﻿@model Grocery_Ecommerce.Models.HomeViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Grocery Shop";
+
+    var userId = ViewContext.HttpContext.Session.GetInt32("UserId");
+    var userName = ViewContext.HttpContext.Session.GetString("UserName");
+    var isLoggedIn = userId != null;
+}
+
+<style>
+    :root{
+        --accent:#ff6b6b;
+        --muted:#6b7280;
+        --bg:#f7f7fb;
+        --card-bg:#ffffff;
+        --radius:12px;
+        --max-width:1200px;
+    }
+
+    .page-container{
+        max-width:var(--max-width);
+        margin:0 auto;
+        padding:2rem 1rem;
+        font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color:#111827;
+    }
+
+    /* Header */
+    .site-header{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:1rem;
+        margin-bottom:1.25rem;
+    }
+    .brand{
+        display:flex;
+        align-items:center;
+        gap:.75rem;
+        text-decoration:none;
+        color:inherit;
+    }
+    .brand-logo{
+        width:48px;
+        height:48px;
+        background:linear-gradient(135deg,var(--accent),#ff9a9a);
+        border-radius:10px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:white;
+        font-weight:700;
+        box-shadow:0 6px 20px rgba(0,0,0,0.08);
+    }
+    nav.nav{
+        display:flex;
+        gap:1rem;
+        align-items:center;
+        flex-wrap: wrap;
+    }
+    nav.nav a, nav.nav button{
+        text-decoration:none;
+        color:var(--muted);
+        padding:.35rem .75rem;
+        border-radius:8px;
+        font-weight:600;
+        transition:all .15s ease;
+        border: none;
+        background: none;
+        cursor: pointer;
+    }
+    nav.nav a:hover, nav.nav button:hover{ 
+        color:var(--accent); 
+        background:rgba(255,107,107,.06) 
+    }
+    
+    .user-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    /* Hero */
+    .hero{
+        background:linear-gradient(90deg, rgba(255,107,107,0.06), rgba(99,102,241,0.03));
+        border-radius:var(--radius);
+        padding:2rem;
+        display:flex;
+        gap:2rem;
+        align-items:center;
+        flex-wrap:wrap;
+        margin-bottom:1.75rem;
+    }
+    .hero-left{ flex:1 1 380px; min-width:260px }
+    .hero-right{ flex:1 1 300px; min-width:260px; display:flex; justify-content:center }
+    .hero h1{ margin:0 0 .5rem 0; font-size:2rem }
+    .hero p{ margin:0 0 1rem 0; color:var(--muted) }
+    .search-inline{
+        display:flex;
+        gap:.5rem;
+        margin-top:.75rem;
+    }
+    .search-inline input{
+        flex:1;
+        padding:.65rem .75rem;
+        border-radius:10px;
+        border:1px solid #e6e7ee;
+        outline:none;
+        font-size:.95rem;
+    }
+    .btn{
+        background:var(--accent);
+        color:white;
+        border:none;
+        padding:.65rem .9rem;
+        border-radius:10px;
+        cursor:pointer;
+        font-weight:700;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn:hover {
+        opacity: 0.9;
+    }
+    .hero-cta{ display:flex; gap:.75rem; margin-top:1rem; align-items:center }
+
+    /* Categories */
+    .categories{
+        margin-bottom:1.5rem;
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+        gap:0.75rem;
+    }
+    .cat-card{
+        background:var(--card-bg);
+        border-radius:12px;
+        padding:1rem;
+        display:flex;
+        gap:0.75rem;
+        align-items:center;
+        box-shadow:0 6px 18px rgba(15,23,42,0.04);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+    }
+    .cat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(15,23,42,0.1);
+    }
+    .cat-icon{
+        width:56px;
+        height:56px;
+        border-radius:10px;
+        background:linear-gradient(135deg,#fff,#f8fafc);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:1.4rem;
+        color:var(--accent);
+    }
+    .cat-title{ font-weight:700; color:#111827 }
+    .cat-sub{ color:var(--muted); font-size:.9rem }
+
+    /* Products */
+    .products{
+        margin-bottom:1.5rem;
+    }
+    .products-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+        gap:1rem;
+    }
+    .product{
+        background:var(--card-bg);
+        padding:1rem;
+        border-radius:12px;
+        box-shadow:0 6px 18px rgba(15,23,42,0.04);
+        display:flex;
+        flex-direction:column;
+        gap:.6rem;
+    }
+    .product img{
+        width:100%;
+        height:150px;
+        object-fit:cover;
+        border-radius:8px;
+    }
+    .product .meta{ display:flex; justify-content:space-between; align-items:center; gap:.5rem }
+    .price{ font-weight:800; color:#0f172a }
+    .oldprice{ text-decoration:line-through; color:var(--muted); font-weight:600; font-size:.9rem }
+    .p-actions{ display:flex; gap:.5rem; margin-top:.6rem }
+    .btn-outline{
+        border:1px solid #e6e7ee;
+        background:transparent;
+        padding:.45rem .65rem;
+        border-radius:8px;
+        cursor:pointer;
+        font-weight:700;
+        text-decoration: none;
+        display: inline-block;
+        color: var(--accent);
+    }
+
+    /* Testimonials / Newsletter / Footer */
+    .testimonials{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+        gap:1rem;
+        margin-bottom:1.25rem;
+    }
+    .testimonial{
+        background:linear-gradient(180deg,#fff,#fcfdff);
+        padding:1rem;
+        border-radius:12px;
+        box-shadow:0 6px 18px rgba(2,6,23,0.03);
+    }
+    .newsletter{
+        background:linear-gradient(90deg,#eef2ff,#fff);
+        padding:1rem;
+        border-radius:12px;
+        display:flex;
+        gap:.75rem;
+        align-items:center;
+        justify-content:space-between;
+        flex-wrap:wrap;
+        margin-bottom:1.25rem;
+    }
+    .newsletter input{
+        padding:.6rem .75rem;
+        border-radius:10px;
+        border:1px solid #e6e7ee;
+        min-width:220px;
+    }
+
+    footer.site-footer{
+        margin-top:1.5rem;
+        color:var(--muted);
+        display:flex;
+        gap:1rem;
+        justify-content:space-between;
+        align-items:center;
+        flex-wrap:wrap;
+    }
+    
+    footer.site-footer a {
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    footer.site-footer a:hover {
+        color: var(--accent);
+    }
+
+</style>
+
+<!-- Filter/Sort/Search Bar -->
+<form method="get" asp-controller="Home" asp-action="Index" style="margin-bottom:2rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:end;">
+    <input type="text" name="search" placeholder="Search products..." value="@Model.SearchQuery" class="form-control" style="min-width:180px;" />
+    <select name="categoryId" class="form-control" style="min-width:140px;">
+        <option value="">All Categories</option>
+        @foreach (var cat in Model.Categories)
+        {
+            if (Model.SelectedCategoryId == cat.CategoryId)
+            {
+                <option value="@cat.CategoryId" selected>@cat.Name</option>
+            }
+            else
+            {
+                <option value="@cat.CategoryId">@cat.Name</option>
+            }
+        }
+    </select>
+    <input type="number" name="minPrice" placeholder="Min Price" value="@(Model.MinPrice?.ToString("F2"))" class="form-control" style="width:100px;" min="0" step="0.01" />
+    <input type="number" name="maxPrice" placeholder="Max Price" value="@(Model.MaxPrice?.ToString("F2"))" class="form-control" style="width:100px;" min="0" step="0.01" />
+    <select name="sortBy" class="form-control" style="min-width:140px;">
+        @if (Model.SortBy == "name_asc" || string.IsNullOrEmpty(Model.SortBy))
+        {
+            <option value="name_asc" selected>Name (A-Z)</option>
+        }
+        else
+        {
+            <option value="name_asc">Name (A-Z)</option>
+        }
+        @if (Model.SortBy == "name_desc")
+        {
+            <option value="name_desc" selected>Name (Z-A)</option>
+        }
+        else
+        {
+            <option value="name_desc">Name (Z-A)</option>
+        }
+        @if (Model.SortBy == "price_asc")
+        {
+            <option value="price_asc" selected>Price (Low-High)</option>
+        }
+        else
+        {
+            <option value="price_asc">Price (Low-High)</option>
+        }
+        @if (Model.SortBy == "price_desc")
+        {
+            <option value="price_desc" selected>Price (High-Low)</option>
+        }
+        else
+        {
+            <option value="price_desc">Price (High-Low)</option>
+        }
+    </select>
+    <button class="btn" type="submit">Apply</button>
+</form>
+
+<div class="page-container">
+
+    <section class="hero" aria-labelledby="hero-heading">
+        <div class="hero-left">
+            <h1 id="hero-heading">Your one-stop grocery shop</h1>
+            <p>Fresh produce, pantry staples, and more — delivered to your doorstep.</p>
+            <form method="get" asp-controller="Product" asp-action="List" class="search-inline" role="search" aria-label="Product search">
+                <input type="text" name="search" placeholder="Search products..." value="@Model.SearchQuery" aria-label="Search products" />
+                <button class="btn" type="submit">Search</button>
+            </form>
+            <div class="hero-cta">
+                <a class="btn" href="/Product/List">Start Shopping</a>
+                <a class="btn btn-outline" href="/Product/List">Browse Categories</a>
+            </div>
+
+            <div style="margin-top:1rem; color:var(--muted);font-size:.9rem">
+                -> Free delivery on orders over 50TK ·  Freshness guaranteed ·  Easy returns
+            </div>
+        </div>
+
+        <div class="hero-right" aria-hidden="true">
+            <img src="https://www.heinens.com/content/uploads/2019/11/Helathy-grocery-Haul.jpg" alt="Fresh groceries" style="width:320px; border-radius:12px; box-shadow:0 12px 40px rgba(15,23,42,0.08)" />
+        </div>
+    </section>
+
+    <section aria-labelledby="featured-categories">
+        <h2 id="featured-categories" style="margin:0 0 .6rem 0">Featured categories</h2>
+        <div class="categories" role="list">
+            @if (Model.Categories.Any())
+            {
+                foreach (var category in Model.Categories)
+                {
+                    <a href="/Product/List?categoryId=@category.CategoryId" class="cat-card" role="listitem" title="Browse @category.Name">
+                        @if (!string.IsNullOrEmpty(category.ImageUrl))
+                        {
+                            <img src="@category.ImageUrl" alt="@category.Name" class="cat-icon" style="object-fit:cover;" />
+                        }
+                        else
+                        {
+                            <div class="cat-icon" aria-label="Category icon">??</div>
+                        }
+                        <div>
+                            <div class="cat-title">@category.Name</div>
+                            <div class="cat-sub">@category.Description</div>
+                        </div>
+                    </a>
+                }
+            }
+            else
+            {
+                <div style="color:var(--muted);padding:1rem;">No categories found.</div>
+            }
+        </div>
+    </section>
+
+    <section class="products" aria-labelledby="popular-products">
+        <h2 id="popular-products" style="margin:0 0 .6rem 0">Popular right now</h2>
+        <div style="margin-bottom: 1.5rem;">
+            <a href="/Product/List" class="btn">View All Products</a>
+        </div>
+        <div class="products-grid" role="list">
+            @if (Model.Products.Any())
+            {
+                var pagedProducts = Model.Products.Take(8).ToList();
+                foreach (var product in pagedProducts)
+                {
+                    <article class="product" role="listitem" aria-labelledby="p@product.ProductId">
+                        <img src="@product.ImageUrl" alt="@product.Name" onerror="this.src='https://via.placeholder.com/300x150'" />
+                        <div id="p@product.ProductId" style="font-weight:700">@product.Name</div>
+                        <div class="meta">
+                            <div class="price">@product.Price.ToString("F2") TK</div>
+                            @* Discount/old price example: if product has OldPrice property *@
+                            @* <div class="oldprice">৳@product.OldPrice.ToString("F2")</div> *@
+                        </div>
+                        <div style="color:var(--muted);font-size:.9rem">@product.Description</div>
+                        <div style="font-size:.9rem; color:@(product.Quantity > 0 ?  "#059669" : "#dc2626"); font-weight:600;}
+                            @(product.Quantity > 0 ? "In Stock" : "Out of Stock")
+                        </div>
+                        <div class="p-actions">
+                            @if (product.Quantity > 0)
+                            {
+                                <form asp-controller="Cart" asp-action="Add" method="post" style="display:inline; width: 48%;">
+                                    <input type="hidden" name="productId" value="@product.ProductId" />
+                                    <button type="submit" class="btn" style="width: 100%; padding: 0.65rem 0.5rem;" aria-label="Buy @product.Name and checkout">Buy Now</button>
+                                </form>
+                                <form asp-controller="Cart" asp-action="Add" method="post" style="display:inline; width: 48%;">
+                                    <input type="hidden" name="productId" value="@product.ProductId" />
+                                    <input type="hidden" name="redirect" value="cart" />
+                                    <button type="submit" class="btn btn-outline" style="width: 100%; padding: 0.45rem 0.5rem;" aria-label="Add @product.Name to cart">Add to Cart</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button class="btn" disabled style="width: 100%; opacity: 0.5;">Out of Stock</button>
+                            }
+                        </div>
+                    </article>
+                }
+            }
+            else
+            {
+                <div style="color:var(--muted);padding:1rem;">No products found.</div>
+            }
+        </div>
+        @if (Model.Products.Count > 8)
+        {
+            <div style="text-align:center;margin-top:1rem;">
+                <a href="/Product/List" class="btn">Load More</a>
+            </div>
+        }
+    </section>
+
+    <section aria-labelledby="testimonials">
+        <h2 id="testimonials" style="margin:0 0 .6rem 0">What customers say</h2>
+        <div class="testimonials">
+            <div class="testimonial">
+                <div style="font-weight:800">"Fast delivery and great customer service."</div>
+                <div style="color:var(--muted);font-size:.95rem;margin-top:.5rem">— Dostugir</div>
+            </div>
+            <div class="testimonial">
+                <div style="font-weight:800">"Quality products at fair prices."</div>
+                <div style="color:var(--muted);font-size:.95rem;margin-top:.5rem">— Farhan Sadik</div>
+            </div>
+            <div class="testimonial">
+                <div style="font-weight:800">"Easy returns and reliable packaging."</div>
+                <div style="color:var(--muted);font-size:.95rem;margin-top:.5rem">— Urnisha</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="newsletter" aria-labelledby="newsletter-heading">
+        <div>
+            <div id="newsletter-heading" style="font-weight:800">Join our newsletter</div>
+            <div style="color:var(--muted);font-size:.95rem">Get 10% off your first order and be the first to know about deals.</div>
+        </div>
+        <form asp-controller="Home" asp-action="SubscribeNewsletter" method="post" style="display:flex;gap:.5rem;align-items:center;">
+            <input type="email" name="email" placeholder="you@domain.com" aria-label="Email address" required />
+            <button class="btn" type="submit">Subscribe</button>
+        </form>
+        @if (TempData["NewsletterMessage"] != null)
+        {
+            <div style="color:green;margin-top:.5rem;">@TempData["NewsletterMessage"]</div>
+        }
+    </section>
+
+    <footer class="site-footer" role="contentinfo">
+        <div>
+            <div style="font-weight:800">GroceryHub</div>
+            <div style="color:var(--muted);font-size:.9rem">© @DateTime.Now.Year GroceryHub — All rights reserved</div>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:center;flex-wrap: wrap;">
+            <a href="/Privacy" title="Privacy Policy">Privacy</a>
+            <a href="/Terms" title="Terms of Service">Terms</a>
+            <a href="/About" title="About Us">About</a>
+            <a href="/Contact" title="Contact Us">Contact</a>
+        </div>
+    </footer>
+</div>
+
+<script>
+    // Small interactivity for demo purposes (no external libs)
+    document.querySelectorAll('.product .btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            btn.innerText = 'Added';
+            btn.disabled = true;
+            btn.style.opacity = '0.95';
+            setTimeout(() => { btn.innerText = 'View'; btn.disabled = false; }, 1200);
+        });
+    });
+</script>

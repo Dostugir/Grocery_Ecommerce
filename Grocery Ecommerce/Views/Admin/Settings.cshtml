@@ -1,0 +1,98 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewData["Title"] = "Admin Settings";
+}
+
+<div class="admin-header">
+    <div>
+        <h2>Settings</h2>
+        <p style="color: #7f8c8d; margin: 5px 0;">Manage system and store settings</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="admin-card">
+            <h4 style="margin-top: 0; color: #2c3e50;">Store Settings</h4>
+            
+            <form method="post" style="margin-top: 20px;">
+                <div class="form-group-admin">
+                    <label>Store Name</label>
+                    <input type="text" value="Grocery Store" placeholder="Enter store name" />
+                </div>
+
+                <div class="form-group-admin">
+                    <label>Store Email</label>
+                    <input type="email" value="support@grocerystore.com" placeholder="support@example.com" />
+                </div>
+
+                <div class="form-group-admin">
+                    <label>Store Phone</label>
+                    <input type="tel" value="+1 (555) 123-4567" placeholder="+1 (555) 123-4567" />
+                </div>
+
+                <div class="form-group-admin">
+                    <label>Store Address</label>
+                    <textarea rows="3" placeholder="Enter complete store address">123 Main Street, City, State 12345</textarea>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button type="submit" class="btn btn-primary-admin">Save Settings</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="admin-card">
+            <h4 style="margin-top: 0; color: #2c3e50;">Security Settings</h4>
+            
+            <form method="post" style="margin-top: 20px;">
+                <div class="form-group-admin">
+                    <label>Change Password</label>
+                    <input type="password" placeholder="Current Password" />
+                </div>
+
+                <div class="form-group-admin">
+                    <input type="password" placeholder="New Password" />
+                </div>
+
+                <div class="form-group-admin">
+                    <input type="password" placeholder="Confirm New Password" />
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button type="submit" class="btn btn-primary-admin">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="admin-card" style="background: #f0f8f5; border-left-color: #27ae60;">
+            <h4 style="margin-top: 0; color: #27ae60;">System Info</h4>
+            <div style="margin: 20px 0;">
+                <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #d1d5db;">
+                    <p style="color: #7f8c8d; font-size: 0.9rem; margin: 0;">Last Login</p>
+                    <p style="font-weight: 600; margin: 5px 0;">@DateTime.Now.ToString("dd MMM yyyy, HH:mm")</p>
+                </div>
+                <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #d1d5db;">
+                    <p style="color: #7f8c8d; font-size: 0.9rem; margin: 0;">System Version</p>
+                    <p style="font-weight: 600; margin: 5px 0;">.NET 10.0</p>
+                </div>
+                <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #d1d5db;">
+                    <p style="color: #7f8c8d; font-size: 0.9rem; margin: 0;">Database Status</p>
+                    <p style="font-weight: 600; margin: 5px 0; color: #27ae60;">✅ Connected</p>
+                </div>
+                <div>
+                    <p style="color: #7f8c8d; font-size: 0.9rem; margin: 0;">API Status</p>
+                    <p style="font-weight: 600; margin: 5px 0; color: #27ae60;">Active</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-card" style="background: #fff3cd; border-left-color: #f39c12;">
+            <h4 style="margin-top: 0; color: #f39c12;">Danger Zone</h4>
+            <p style="font-size: 0.9rem; color: #7f8c8d; margin: 10px 0;">Proceed with caution</p>
+            <button type="button" class="btn btn-primary-admin" style="background: #e74c3c; width: 100%; margin-top: 10px;">Clear Cache</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,94 @@
+@model Grocery_Ecommerce.Models.Product
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Name;
+    var reviews = ViewBag.Reviews as List<Grocery_Ecommerce.Models.ProductReview>;
+    var avgRating = (double)(ViewBag.AvgRating ?? 0);
+    var userId = ViewContext.HttpContext.Session.GetInt32("UserId");
+}
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <img src="@Model.ImageUrl" class="img-fluid" onerror="this.src='https://via.placeholder.com/300'" />
+    </div>
+    <div class="col-md-6">
+        <h2>@Model.Name</h2>
+        <p class="lead">@Model.Price.ToString("F2")Tk</p>
+        <p>@Model.Description</p>
+        <p>Category: @Model.Category?.Name</p>
+        <p>
+            <strong>Average Rating:</strong>
+            @if (avgRating > 0)
+            {
+                <span style="color:gold">@string.Concat(Enumerable.Repeat("?", (int)Math.Round(avgRating)))</span>
+                <span style="color:#888">(@avgRating.ToString("0.0"))</span>
+            }
+            else
+            {
+                <span style="color:#888">No ratings yet</span>
+            }
+        </p>
+        <form asp-controller="Cart" asp-action="Add" method="post">
+            <input type="hidden" name="productId" value="@Model.ProductId" />
+            <div class="mb-3">
+                <label>Quantity</label>
+                <input name="quantity" value="1" class="form-control" />
+            </div>
+            <button class="btn btn-primary">Add to Cart</button>
+        </form>
+    </div>
+</div>
+<hr />
+<div class="row mt-4">
+    <div class="col-md-8">
+        <h4>Customer Reviews</h4>
+        @if (TempData["ReviewMessage"] != null)
+        {
+            <div class="alert alert-info">@TempData["ReviewMessage"]</div>
+        }
+        @if (reviews != null && reviews.Any())
+        {
+            foreach (var r in reviews)
+            {
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <div style="color:gold">@string.Concat(Enumerable.Repeat("?", r.Rating))</div>
+                        <div>@r.Comment</div>
+                        <div style="font-size:.9em;color:#888;">by @r.User?.FullName on @r.CreatedAt.ToLocalTime().ToString("g")</div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div>No reviews yet. Be the first to review!</div>
+        }
+        <hr />
+        @if (userId != null)
+        {
+            <h5>Leave a Review</h5>
+            <form asp-controller="Product" asp-action="AddReview" method="post">
+                <input type="hidden" name="productId" value="@Model.ProductId" />
+                <div class="mb-2">
+                    <label>Rating</label>
+                    <select name="rating" class="form-control" required>
+                        <option value="">Select</option>
+                        @for (int i = 5; i >= 1; i--)
+                        {
+                            <option value="@i">@i Star@(i > 1 ? "s" : "")</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label>Comment</label>
+                    <textarea name="comment" class="form-control" required maxlength="1000"></textarea>
+                </div>
+                <button class="btn btn-success" type="submit">Submit Review</button>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-warning">You must <a href="/Account/Login">login</a> to leave a review.</div>
+        }
+    </div>
+</div>

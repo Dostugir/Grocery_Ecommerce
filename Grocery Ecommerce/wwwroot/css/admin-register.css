@@ -1,0 +1,40 @@
+/* Admin Registration Page Styles */
+.admin-register-container {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 32px 24px 24px 24px;
+    margin: 40px auto;
+    max-width: 420px;
+}
+.admin-register-container h2 {
+    text-align: center;
+    margin-bottom: 24px;
+    color: #2c3e50;
+    font-weight: 600;
+}
+.admin-register-container .form-label {
+    font-weight: 500;
+    color: #34495e;
+}
+.admin-register-container .form-control {
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    padding: 10px 12px;
+    font-size: 1rem;
+}
+.admin-register-container .btn-primary {
+    background: #27ae60;
+    border: none;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-top: 10px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+.admin-register-container .btn-primary:hover {
+    background: #219150;
+}
+.admin-register-container .text-danger {
+    font-size: 0.95rem;
+}

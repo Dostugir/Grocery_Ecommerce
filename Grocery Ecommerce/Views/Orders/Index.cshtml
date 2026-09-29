@@ -1,0 +1,392 @@
+@model IEnumerable<Grocery_Ecommerce.Models.Order>
+@using System.Linq
+@inject Grocery_Ecommerce.Data.AppDbContext _context
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "My Orders";
+}
+
+<style>
+    .orders-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .orders-header {
+        margin-bottom: 40px;
+    }
+
+    .orders-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 10px 0;
+    }
+
+    .orders-header p {
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .order-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 24px;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+    }
+
+    .order-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f3f4f6;
+    }
+
+    .order-info {
+        flex: 1;
+    }
+
+    .order-number {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .order-date {
+        color: #6b7280;
+        font-size: 0.95rem;
+    }
+
+    .order-status {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-processing {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .status-shipped {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-delivered {
+        background: #d1f5e2;
+        color: #165e3a;
+    }
+
+    .status-cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .order-details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .detail-block {
+        background: #f9fafb;
+        padding: 16px;
+        border-radius: 8px;
+        border-left: 4px solid #27ae60;
+    }
+
+    .detail-label {
+        color: #6b7280;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .detail-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .detail-value.amount {
+        color: #27ae60;
+    }
+
+    .items-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+
+    .item-tag {
+        background: #eff6ff;
+        color: #1e40af;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        border: 1px solid #bfdbfe;
+    }
+
+    .order-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-view {
+        flex: 1;
+        padding: 12px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        transition: background 0.3s;
+    }
+
+    .btn-view:hover {
+        background: #5568d3;
+    }
+
+    .btn-reorder {
+        flex: 1;
+        padding: 12px;
+        background: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .btn-reorder:hover {
+        background: #229954;
+    }
+
+    .empty-orders {
+        background: white;
+        border-radius: 12px;
+        padding: 60px 20px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .empty-orders h2 {
+        font-size: 1.5rem;
+        color: #1f2937;
+        margin-bottom: 12px;
+    }
+
+    .empty-orders p {
+        color: #6b7280;
+        margin-bottom: 24px;
+    }
+
+    .empty-orders a {
+        padding: 12px 24px;
+        background: #27ae60;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        display: inline-block;
+        transition: background 0.3s;
+    }
+
+    .empty-orders a:hover {
+        background: #229954;
+    }
+</style>
+
+<div class="orders-container">
+    <div class="orders-header">
+        <h1>My Orders</h1>
+        <p>View and manage your past purchases</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-orders">
+            <h2>No Orders Yet</h2>
+            <p>You haven't placed any orders yet. Start shopping to see your order history here!</p>
+            <a href="@Url.Action("List", "Product")">Start Shopping</a>
+        </div>
+    }
+    else
+    {
+        @foreach (var order in Model)
+        {
+            var itemCount = _context.OrderItems.Where(oi => oi.OrderId == order.OrderId).Count();
+            var items = _context.OrderItems.Where(oi => oi.OrderId == order.OrderId).ToList();
+            var statusClass = $"status-{order.OrderStatus.ToLower().Replace(" ", "-")}";
+            var statusIcon = order.OrderStatus switch
+            {
+                "Pending" => "",
+                "Processing" => "",
+                "Shipped" => "",
+                "Delivered" => "",
+                "Cancelled" => "",
+                _ => ""
+            };
+
+            <div class="order-card">
+                <div class="order-header">
+                    <div class="order-info">
+                        <div class="order-number">Order #@order.OrderId</div>
+                        <div class="order-date">@order.CreatedAt.ToString("MMMM dd, yyyy – h:mm tt")</div>
+                    </div>
+                    <span class="order-status @statusClass">@statusIcon @order.OrderStatus</span>
+                </div>
+
+                <div class="order-details-grid">
+                    <div class="detail-block">
+                        <div class="detail-label">Items</div>
+                    <div class="detail-value">@itemCount</div>
+                    </div>
+                    <div class="detail-block">
+                        <div class="detail-label">Total Amount</div>
+                          <div class="detail-value amount">@order.TotalAmount.ToString("0.00")Tk</div>
+                    </div>
+                    <div class="detail-block">
+                        <div class="detail-label">Status</div>
+                        <div class="detail-value">@order.OrderStatus</div>
+                    </div>
+                </div>
+
+                <div class="items-preview">
+                    @foreach (var item in items.Take(3))
+                    {
+                        var product = _context.Products.Find(item.ProductId);
+                        @* <div class="item-tag">
+                            <strong>@product?.Name</strong> (x@item.Quantity)
+                        </div> *@
+                    }
+                    @if (items.Count > 3)
+                    {
+                        <div class="item-tag">
+                            <strong>+@(items.Count - 3) more items</strong>
+                        </div>
+                    }
+                </div>
+
+                <div class="order-actions">
+                    <a href="@Url.Action("Details", "Orders", new { id = order.OrderId })" class="btn-view">View Details</a>
+                    <button class="btn-reorder" onclick="reorderItems(@order.OrderId)">Reorder</button>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<style>
+    @@keyframes slideInAlert {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @@keyframes slideOutAlert {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+</style>
+
+<script>
+    function reorderItems(orderId) {
+        if (!confirm('Add all items from this order to your cart')) {
+            return;
+        }
+
+        fetch('/Orders/ReorderItems', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: 'orderId=' + orderId
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                setTimeout(() => {
+                    if (data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        location.reload();
+                    }
+                }, 1500);
+            } else {
+                showAlert(data.message || 'Failed to add items to cart', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('An error occurred while reordering', 'error');
+        });
+    }
+
+    function showAlert(message, type) {
+        const alert = document.createElement('div');
+        alert.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background-color: ${type === 'success' ? '#d1fae5' : '#fee2e2'};
+            color: ${type === 'success' ? '#065f46' : '#991b1b'};
+            border-left: 4px solid ${type === 'success' ? '#10b981' : '#ef4444'};
+            border-radius: 0.375rem;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: slideInAlert 0.3s ease;
+        `;
+        alert.innerHTML = `<span>${message}</span>`;
+        document.body.appendChild(alert);
+
+        setTimeout(() => {
+            alert.style.animation = 'slideOutAlert 0.3s ease';
+            setTimeout(() => alert.remove(), 300);
+        }, 4000);
+    }
+</script>

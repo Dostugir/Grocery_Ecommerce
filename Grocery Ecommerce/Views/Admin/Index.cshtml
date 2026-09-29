@@ -1,0 +1,74 @@
+@model Grocery_Ecommerce.Models.AdminDashboardViewModel
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="admin-header">
+    <div>
+        <h2>Dashboard</h2>
+        <p style="color: #7f8c8d; margin: 5px 0;">Welcome back! Here's your store overview.</p>
+    </div>
+    <div style="font-size: 0.9rem; color: #7f8c8d;">
+        Last updated: @DateTime.Now.ToString("dd MMM yyyy, HH:mm")
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-label">Total Users</div>
+            <div class="stat-number">@Model.UsersCount</div>
+            <small style="color: #95a5a6;">Registered customers</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-label">Total Products</div>
+            <div class="stat-number">@Model.ProductsCount</div>
+            <small style="color: #95a5a6;">In inventory</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-label">Categories</div>
+            <div class="stat-number">@Model.CategoriesCount</div>
+            <small style="color: #95a5a6;">Product categories</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-label">Orders</div>
+            <div class="stat-number">0</div>
+            <small style="color: #95a5a6;">Total orders</small>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="admin-card">
+            <h4 style="margin-top: 0; color: #2c3e50;">Quick Actions</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <a href="@Url.Action("CreateProduct", "Admin")" class="btn btn-primary-admin" style="text-align: center; text-decoration: none;">
+                    Add New Product
+                </a>
+                <a href="@Url.Action("CreateCategory", "Admin")" class="btn btn-primary-admin" style="text-align: center; text-decoration: none;">
+                    Add Category
+                </a>
+                <a href="@Url.Action("Products", "Admin")" class="btn btn-primary-admin" style="text-align: center; text-decoration: none;">
+                    Manage Products
+                </a>
+                <a href="@Url.Action("Categories", "Admin")" class="btn btn-primary-admin" style="text-align: center; text-decoration: none;">
+                    Manage Categories
+                </a>
+                <a href="@Url.Action("Orders", "Admin")" class="btn btn-primary-admin" style="text-align: center; text-decoration: none;">
+                    View Orders
+                </a>
+                <a href="@Url.Action("Users", "Admin")" class="btn btn-primary-admin" style="text-align: center; text-decoration: none;">
+                    Manage Users
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

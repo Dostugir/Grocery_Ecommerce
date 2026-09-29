@@ -1,0 +1,27 @@
+@model Grocery_Ecommerce.Models.LoginViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Admin Login";
+}
+
+<h2>Admin Login</h2>
+<form asp-action="AdminLogin" method="post" style="max-width:400px;margin:auto;">
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">Email</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label">Password</label>
+        <input asp-for="Password" type="password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <button class="btn btn-primary w-100">Login as Admin</button>
+    <div class="text-danger mt-2">
+        @Html.ValidationSummary(false)
+    </div>
+</form>
+
+<p>
+    <a asp-action="AdminRegister" asp-controller="Account">Register as a new admin</a>
+</p>
